@@ -21,14 +21,20 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { email: user.email, sub: user.id };
+    
+    // Definir o token com expiração de 7 dias
+    const access_token = this.jwtService.sign(payload, {
+      expiresIn: '7d', // Definindo expiração de 7 dias
+    });
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
       user,
     };
   }
 
   async forgotPassword(email: string) {
-// Lógica de redefinição de senha, como enviar um link de redefinição
+    // Lógica de redefinição de senha
   }
 
   async resetPassword(userId: number, newPassword: string) {
