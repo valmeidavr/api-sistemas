@@ -27,9 +27,33 @@ export class AuthService {
       expiresIn: '7d', // Definindo expiração de 7 dias
     });
 
+    const softwares = await this.prisma.usuario.findUnique({
+      where: { id: user.id },
+      select: {
+        permissoes: {
+          include: {
+            perfil: {
+              include: {
+                software: true,// Inclui os softwares
+              },
+            },
+          },
+        },
+      },
+    });
+
+
+    const userSoftwares = softwares.permissoes.map((permission) => ({
+      softwareId: permission.perfil.software.id,
+      softwareName: permission.perfil.software.nome,
+      perfilId: permission.perfil.id,
+      perfilDescricao: permission.perfil.descricao,
+    }));
+
     return {
       access_token,
       user,
+      softwares: userSoftwares,
     };
   }
 

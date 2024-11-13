@@ -25,7 +25,7 @@ model Usuario {
 
 model Software {
   id              Int             @id @default(autoincrement())
-  nome            String
+  nome            String          @unique 
   descricao       String?
   perfis          Perfil[]
   regras          Regra[]
@@ -33,7 +33,7 @@ model Software {
 
 model Perfil {
   id              Int             @id @default(autoincrement())
-  descricao       String
+  descricao       String        
   softwareId      Int
   software        Software        @relation(fields: [softwareId], references: [id])
   regras          RegraPerfil[]
@@ -42,7 +42,7 @@ model Perfil {
 
 model Regra {
   id              Int             @id @default(autoincrement())
-  descricao       String
+  descricao       String          @unique
   softwareId      Int
   software        Software        @relation(fields: [softwareId], references: [id])
   perfis          RegraPerfil[]
