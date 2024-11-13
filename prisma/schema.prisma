@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Usuario {
+  id              Int             @id @default(autoincrement())
+  name            String
+  email           String          @unique
+  password        String
+  status          String          @default("ativo") // ativo ou inativo
+  permissoes      PermissaoUsuario[]
+}
+
+model Software {
+  id              Int             @id @default(autoincrement())
+  nome            String
+  descricao       String?
+  perfis          Perfil[]
+  regras          Regra[]
+}
+
+model Perfil {
+  id              Int             @id @default(autoincrement())
+  descricao       String
+  softwareId      Int
+  software        Software        @relation(fields: [softwareId], references: [id])
+  regras          RegraPerfil[]
+  permissoes      PermissaoUsuario[]
+}
+
+model Regra {
+  id              Int             @id @default(autoincrement())
+  descricao       String
+  softwareId      Int
+  software        Software        @relation(fields: [softwareId], references: [id])
+  perfis          RegraPerfil[]
+}
+
+model RegraPerfil {
+  id              Int             @id @default(autoincrement())
+  perfilId        Int
+  regraId         Int
+  autorizado      Boolean
+  perfil          Perfil          @relation(fields: [perfilId], references: [id])
+  regra           Regra           @relation(fields: [regraId], references: [id])
+}
+
+model PermissaoUsuario {
+  id              Int             @id @default(autoincrement())
+  usuarioId       Int
+  perfilId        Int
+  dataAtribuicao  DateTime        @default(now())
+  usuario         Usuario         @relation(fields: [usuarioId], references: [id])
+  perfil          Perfil          @relation(fields: [perfilId], references: [id])
+}
